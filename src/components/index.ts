@@ -1,0 +1,12 @@
+export { default as Nav } from "./Nav";
+export { default as Hero } from "./Hero";
+export { default as Hero3D } from "./Hero3D";
+export { default as Problem } from "./Problem";
+export { default as Solution } from "./Solution";
+export { default as Gallery } from "./Gallery";
+export { default as VideoLibrary } from "./VideoLibrary";
+export { default as Process } from "./Process";
+export { default as Pricing } from "./Pricing";
+export { default as LeadMagnet } from "./LeadMagnet";
+export { default as FAQ } from "./FAQ";
+export { default as Footer } from "./Footer";
