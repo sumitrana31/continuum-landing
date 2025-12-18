@@ -53,12 +53,7 @@ export default function Hero3D() {
             <AsciiHeading text="TRAINING" delay={0.3} className="mb-2" />
             <AsciiHeading text="PEOPLE" delay={0.5} className="mb-2" />
             <AsciiHeading text="ACTUALLY" delay={0.7} className="mb-2" />
-            <AsciiHeading
-              text="FINISH."
-              delay={0.9}
-              className="opacity-60"
-              glitchIntensity={0.03}
-            />
+            <AsciiHeading text="FINISH." delay={0.9} className="opacity-60" />
           </h1>
 
           {/* Horizontal line reveal */}

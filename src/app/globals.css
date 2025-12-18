@@ -484,3 +484,41 @@ h1, h2, h3, h4, h5, h6 {
 .delay-3 { transition-delay: 0.3s !important; }
 .delay-4 { transition-delay: 0.4s !important; }
 .delay-5 { transition-delay: 0.5s !important; }
+
+/* ===================================
+   ASCII HEADING GLITCH ANIMATION
+   CSS-based for better performance
+   =================================== */
+
+.ascii-heading {
+  position: relative;
+  animation: ascii-glitch 8s ease-in-out infinite;
+}
+
+@keyframes ascii-glitch {
+  0%, 95%, 100% {
+    text-shadow: 0 0 30px rgba(255,255,255,0.3), 0 0 60px rgba(255,255,255,0.1);
+    transform: translateX(0);
+  }
+  96% {
+    text-shadow:
+      2px 0 #ff0040,
+      -2px 0 #00ffff,
+      0 0 30px rgba(255,255,255,0.5);
+    transform: translateX(-2px);
+  }
+  97% {
+    text-shadow:
+      -2px 0 #ff0040,
+      2px 0 #00ffff,
+      0 0 30px rgba(255,255,255,0.5);
+    transform: translateX(2px);
+  }
+  98% {
+    text-shadow:
+      1px 0 #ff0040,
+      -1px 0 #00ffff,
+      0 0 30px rgba(255,255,255,0.5);
+    transform: translateX(1px);
+  }
+}
