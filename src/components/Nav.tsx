@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { brand, navLinks, trackEvent } from "@/lib/data";
 
@@ -32,13 +33,20 @@ export default function Nav() {
     >
       <div className="container">
         <div className="flex items-center justify-between">
-          {/* Wordmark */}
+          {/* Logo */}
           <a
             href="#"
-            className="text-lg font-medium tracking-tight"
+            className="flex items-center"
             aria-label={`${brand.name} - Home`}
           >
-            {brand.name}
+            <Image
+              src="/images/logo-128.png"
+              alt={brand.name}
+              width={120}
+              height={32}
+              priority
+              className="h-8 w-auto"
+            />
           </a>
 
           {/* Desktop Navigation */}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Image from "next/image";
 import { motion, useInView } from "framer-motion";
 import { brand, footer, trackEvent } from "@/lib/data";
 
@@ -64,7 +65,13 @@ export default function Footer() {
           className="flex flex-col md:flex-row items-center justify-between gap-6"
         >
           {/* Brand */}
-          <span className="text-sm font-medium">{brand.name}</span>
+          <Image
+            src="/images/logo-128.png"
+            alt={brand.name}
+            width={100}
+            height={28}
+            className="h-7 w-auto"
+          />
 
           {/* Disclaimer */}
           <p className="text-xs text-[var(--foreground-muted)] text-center md:text-left max-w-xl">
