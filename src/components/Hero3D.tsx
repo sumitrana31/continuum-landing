@@ -1,119 +1,9 @@
 "use client";
 
-import { useRef, useMemo, Suspense, useState, useEffect } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Float, Sphere } from "@react-three/drei";
-import * as THREE from "three";
+import { Suspense } from "react";
 import { motion } from "framer-motion";
 import { brand, trackEvent } from "@/lib/data";
-
-// Minimalist wireframe sphere with slow rotation
-function MinimalistSphere() {
-  const meshRef = useRef<THREE.Mesh>(null);
-
-  useFrame((state) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y = state.clock.elapsedTime * 0.05;
-      meshRef.current.rotation.x = state.clock.elapsedTime * 0.02;
-    }
-  });
-
-  return (
-    <Float speed={0.5} rotationIntensity={0.1} floatIntensity={0.3}>
-      <Sphere ref={meshRef} args={[2, 32, 32]} position={[0, 0, 0]}>
-        <meshBasicMaterial
-          color="#ffffff"
-          wireframe
-          transparent
-          opacity={0.15}
-        />
-      </Sphere>
-    </Float>
-  );
-}
-
-// Subtle particle field
-function ParticleField() {
-  const count = 200;
-  const pointsRef = useRef<THREE.Points>(null);
-
-  const particles = useMemo(() => {
-    const positions = new Float32Array(count * 3);
-    for (let i = 0; i < count; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 30;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 30;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 15;
-    }
-    return positions;
-  }, []);
-
-  const geometry = useMemo(() => {
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute("position", new THREE.BufferAttribute(particles, 3));
-    return geo;
-  }, [particles]);
-
-  useFrame((state) => {
-    if (pointsRef.current) {
-      pointsRef.current.rotation.y = state.clock.elapsedTime * 0.01;
-    }
-  });
-
-  return (
-    <points ref={pointsRef} geometry={geometry}>
-      <pointsMaterial
-        size={0.015}
-        color="#ffffff"
-        transparent
-        opacity={0.4}
-        sizeAttenuation
-      />
-    </points>
-  );
-}
-
-function Scene() {
-  return (
-    <>
-      <ambientLight intensity={0.1} />
-      <ParticleField />
-      <MinimalistSphere />
-    </>
-  );
-}
-
-// 3D Canvas wrapper with error handling
-function Scene3D() {
-  const [hasError, setHasError] = useState(false);
-
-  useEffect(() => {
-    // Check for WebGL support
-    try {
-      const canvas = document.createElement("canvas");
-      const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-      if (!gl) {
-        setHasError(true);
-      }
-    } catch {
-      setHasError(true);
-    }
-  }, []);
-
-  if (hasError) {
-    return null;
-  }
-
-  return (
-    <Canvas
-      camera={{ position: [0, 0, 8], fov: 50 }}
-      dpr={[1, 1.5]}
-      gl={{ antialias: true, alpha: true }}
-      onCreated={() => {}}
-    >
-      <Scene />
-    </Canvas>
-  );
-}
+import AsciiVideo from "./AsciiVideo";
 
 export default function Hero3D() {
   const handlePrimaryCta = () => {
@@ -126,10 +16,10 @@ export default function Hero3D() {
       className="relative min-h-screen flex items-center justify-center overflow-hidden bg-black"
       aria-label="Hero"
     >
-      {/* Minimalist 3D Background */}
+      {/* ASCII Art Animation Background */}
       <div className="absolute inset-0 z-0">
         <Suspense fallback={null}>
-          <Scene3D />
+          <AsciiVideo />
         </Suspense>
       </div>
 
