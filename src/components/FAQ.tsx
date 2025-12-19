@@ -21,7 +21,7 @@ export default function FAQ() {
   return (
     <section
       id="faq"
-      className="py-32 md:py-48 bg-elevated"
+      className="py-32 md:py-48 bg-elevated section-ambient"
       aria-labelledby="faq-heading"
       ref={ref}
     >
@@ -50,10 +50,10 @@ export default function FAQ() {
               initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] as const }}
-              className="text-subhead"
-            >
-              Everything you need to know about working with Continuum.
-            </motion.p>
+            className="text-subhead"
+          >
+            Everything you need to know before starting a pilot.
+          </motion.p>
           </div>
 
           {/* Right Column - Accordion */}

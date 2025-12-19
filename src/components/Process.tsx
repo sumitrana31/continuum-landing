@@ -11,7 +11,7 @@ export default function Process() {
   return (
     <section
       id="process"
-      className="py-32 md:py-48"
+      className="py-32 md:py-48 section-ambient"
       aria-labelledby="process-heading"
       ref={ref}
     >
@@ -41,7 +41,7 @@ export default function Process() {
             transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] as const }}
             className="text-subhead"
           >
-            A reliable, transparent production process with clear checkpoints.
+            A reliable, transparent production process with clear checkpoints and fast approvals.
           </motion.p>
         </div>
 

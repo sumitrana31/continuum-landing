@@ -2,9 +2,13 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
-import { workSamples, brand, trackEvent } from "@/lib/data";
+import { workSamples, brand, trackEvent, styleOptions } from "@/lib/data";
 
 type Sample = (typeof workSamples)[0];
+
+const styleMap = Object.fromEntries(
+  styleOptions.map((style) => [style.label, style])
+) as Record<string, { gradient: string; accent: string }>;
 
 export default function Gallery() {
   const [selectedSample, setSelectedSample] = useState<Sample | null>(null);
@@ -36,7 +40,7 @@ export default function Gallery() {
   return (
     <section
       id="work"
-      className="py-32 md:py-48 bg-elevated"
+      className="py-32 md:py-48 bg-elevated section-ambient"
       aria-labelledby="work-heading"
       ref={ref}
     >
@@ -81,7 +85,14 @@ export default function Gallery() {
 
         {/* Gallery Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-white/10">
-          {workSamples.map((sample, index) => (
+          {workSamples.map((sample, index) => {
+            const styleOption = styleMap[sample.style];
+            const gradient =
+              styleOption?.gradient ??
+              "linear-gradient(135deg, #0b0f14 0%, #121b2a 50%, #0a0f1a 100%)";
+            const accent = styleOption?.accent ?? "#ffffff";
+
+            return (
             <motion.button
               key={sample.id}
               initial={{ opacity: 0, y: 20 }}
@@ -97,12 +108,33 @@ export default function Gallery() {
             >
               {/* Thumbnail Placeholder */}
               <div className="aspect-video relative overflow-hidden mb-6 border border-white/10 group-hover:border-white/30 transition-colors duration-500">
-                <div className="absolute inset-0 bg-black" />
+                <div className="absolute inset-0" style={{ background: gradient }} />
+                <div
+                  className="absolute inset-0 opacity-40"
+                  style={{
+                    background:
+                      "radial-gradient(circle at 20% 20%, rgba(255,255,255,0.25), transparent 55%)",
+                  }}
+                />
+                <div
+                  className="absolute inset-0 opacity-30"
+                  style={{
+                    background:
+                      "linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.9) 100%)",
+                  }}
+                />
+                <div
+                  className="absolute inset-x-0 bottom-0 h-px"
+                  style={{ background: `${accent}` }}
+                />
 
                 {/* Play Icon Overlay */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-12 h-12 border border-white/30 flex items-center justify-center opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500">
-                    <svg className="w-4 h-4 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                  <div
+                    className="w-12 h-12 border border-white/30 flex items-center justify-center opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500"
+                    style={{ borderColor: `${accent}55` }}
+                  >
+                    <svg className="w-4 h-4 ml-0.5" fill="currentColor" viewBox="0 0 24 24" style={{ color: accent }}>
                       <path d="M8 5v14l11-7z" />
                     </svg>
                   </div>
@@ -114,7 +146,7 @@ export default function Gallery() {
                 </span>
 
                 {/* Style Tag */}
-                <span className="absolute top-3 left-3 text-label">
+                <span className="absolute top-3 left-3 text-label" style={{ color: accent }}>
                   {sample.style}
                 </span>
               </div>
@@ -134,7 +166,8 @@ export default function Gallery() {
                 ))}
               </div>
             </motion.button>
-          ))}
+          );
+        })}
         </div>
       </div>
 

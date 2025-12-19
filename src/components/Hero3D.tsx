@@ -1,119 +1,35 @@
 "use client";
 
-import { useRef, useMemo, Suspense, useState, useEffect } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Float, Sphere } from "@react-three/drei";
-import * as THREE from "three";
+import { Fragment, Suspense } from "react";
 import { motion } from "framer-motion";
-import { brand, trackEvent } from "@/lib/data";
+import { brand, trackEvent, proofChips, audienceSegments, outcomeStats } from "@/lib/data";
+import AsciiVideo from "./AsciiVideo";
 
-// Minimalist wireframe sphere with slow rotation
-function MinimalistSphere() {
-  const meshRef = useRef<THREE.Mesh>(null);
-
-  useFrame((state) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y = state.clock.elapsedTime * 0.05;
-      meshRef.current.rotation.x = state.clock.elapsedTime * 0.02;
-    }
-  });
-
-  return (
-    <Float speed={0.5} rotationIntensity={0.1} floatIntensity={0.3}>
-      <Sphere ref={meshRef} args={[2, 32, 32]} position={[0, 0, 0]}>
-        <meshBasicMaterial
-          color="#ffffff"
-          wireframe
-          transparent
-          opacity={0.15}
-        />
-      </Sphere>
-    </Float>
-  );
-}
-
-// Subtle particle field
-function ParticleField() {
-  const count = 200;
-  const pointsRef = useRef<THREE.Points>(null);
-
-  const particles = useMemo(() => {
-    const positions = new Float32Array(count * 3);
-    for (let i = 0; i < count; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 30;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 30;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 15;
-    }
-    return positions;
-  }, []);
-
-  const geometry = useMemo(() => {
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute("position", new THREE.BufferAttribute(particles, 3));
-    return geo;
-  }, [particles]);
-
-  useFrame((state) => {
-    if (pointsRef.current) {
-      pointsRef.current.rotation.y = state.clock.elapsedTime * 0.01;
-    }
-  });
-
-  return (
-    <points ref={pointsRef} geometry={geometry}>
-      <pointsMaterial
-        size={0.015}
-        color="#ffffff"
-        transparent
-        opacity={0.4}
-        sizeAttenuation
-      />
-    </points>
-  );
-}
-
-function Scene() {
-  return (
-    <>
-      <ambientLight intensity={0.1} />
-      <ParticleField />
-      <MinimalistSphere />
-    </>
-  );
-}
-
-// 3D Canvas wrapper with error handling
-function Scene3D() {
-  const [hasError, setHasError] = useState(false);
-
-  useEffect(() => {
-    // Check for WebGL support
-    try {
-      const canvas = document.createElement("canvas");
-      const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-      if (!gl) {
-        setHasError(true);
-      }
-    } catch {
-      setHasError(true);
-    }
-  }, []);
-
-  if (hasError) {
-    return null;
+const ChipIcon = ({ type }: { type: string }) => {
+  switch (type) {
+    case "clock":
+      return (
+        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" strokeWidth="2" />
+          <path strokeLinecap="round" strokeWidth="2" d="M12 6v6l4 2" />
+        </svg>
+      );
+    case "check":
+      return (
+        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+        </svg>
+      );
+    case "refresh":
+      return (
+        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+      );
+    default:
+      return null;
   }
-
-  return (
-    <Canvas
-      camera={{ position: [0, 0, 8], fov: 50 }}
-      dpr={[1, 1.5]}
-      gl={{ antialias: true, alpha: true }}
-      onCreated={() => {}}
-    >
-      <Scene />
-    </Canvas>
-  );
-}
+};
 
 export default function Hero3D() {
   const handlePrimaryCta = () => {
@@ -126,23 +42,23 @@ export default function Hero3D() {
       className="relative min-h-screen flex items-center justify-center overflow-hidden bg-black"
       aria-label="Hero"
     >
-      {/* Minimalist 3D Background */}
+      {/* Full-screen ASCII Animation Background */}
       <div className="absolute inset-0 z-0">
         <Suspense fallback={null}>
-          <Scene3D />
+          <AsciiVideo />
         </Suspense>
       </div>
 
-      {/* Subtle gradient overlay */}
+      {/* Content overlay gradient - subtle to let ASCII show through */}
       <div
-        className="absolute inset-0 z-[1]"
+        className="absolute inset-0 z-[1] pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 100%)",
+            "linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.7) 100%)",
         }}
       />
 
-      {/* Content - visible immediately */}
+      {/* Content */}
       <div className="container relative z-10 pt-32 pb-40">
         <div className="max-w-5xl">
           {/* Label */}
@@ -152,7 +68,7 @@ export default function Hero3D() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="mb-8"
           >
-            <span className="text-label">Training Production Studio</span>
+            <span className="text-label">{brand.heroEyebrow}</span>
           </motion.div>
 
           {/* Main Headline */}
@@ -202,6 +118,21 @@ export default function Hero3D() {
             {brand.heroSubhead}
           </motion.p>
 
+          {/* Proof Chips */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.75, ease: [0.16, 1, 0.3, 1] as const }}
+            className="flex flex-wrap items-center gap-3 mb-10"
+          >
+            {proofChips.map((chip) => (
+              <span key={chip.label} className="chip chip-accent">
+                <ChipIcon type={chip.icon} />
+                {chip.label}
+              </span>
+            ))}
+          </motion.div>
+
           {/* CTAs */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -224,8 +155,23 @@ export default function Hero3D() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              View Sample Work
+              {brand.secondaryCta}
             </motion.a>
+          </motion.div>
+
+          {/* Audience */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.9, ease: [0.16, 1, 0.3, 1] as const }}
+            className="mt-8 flex flex-wrap items-center gap-3"
+          >
+            <span className="text-label">Built for</span>
+            {audienceSegments.map((segment) => (
+              <span key={segment} className="chip">
+                {segment}
+              </span>
+            ))}
           </motion.div>
         </div>
       </div>
@@ -245,22 +191,17 @@ export default function Hero3D() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.9 }}
-        className="absolute bottom-12 right-12 hidden lg:flex items-center gap-12 text-sm"
+        className="absolute bottom-12 right-12 hidden lg:flex items-center gap-10 text-sm bg-black/30 border border-white/10 px-6 py-4 backdrop-blur-sm"
       >
-        <div>
-          <span className="text-[var(--foreground-muted)] block">First cut</span>
-          <span className="font-medium">48 hours</span>
-        </div>
-        <div className="w-px h-8 bg-white/20" />
-        <div>
-          <span className="text-[var(--foreground-muted)] block">Final delivery</span>
-          <span className="font-medium">~3 days</span>
-        </div>
-        <div className="w-px h-8 bg-white/20" />
-        <div>
-          <span className="text-[var(--foreground-muted)] block">Revisions</span>
-          <span className="font-medium">2 included</span>
-        </div>
+        {outcomeStats.map((stat, index) => (
+          <Fragment key={stat.label}>
+            <div>
+              <span className="text-[var(--foreground-muted)] block">{stat.label}</span>
+              <span className="font-medium">{stat.value}</span>
+            </div>
+            {index < outcomeStats.length - 1 && <div className="w-px h-8 bg-white/20" />}
+          </Fragment>
+        ))}
       </motion.div>
     </section>
   );

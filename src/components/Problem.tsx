@@ -11,7 +11,7 @@ export default function Problem() {
   return (
     <section
       id="problem"
-      className="py-32 md:py-48 bg-elevated"
+      className="py-32 md:py-48 bg-elevated section-ambient"
       aria-labelledby="problem-heading"
       ref={ref}
     >
@@ -33,7 +33,7 @@ export default function Problem() {
             transition={{ duration: 1, delay: 0.1, ease: [0.16, 1, 0.3, 1] as const }}
             className="text-headline"
           >
-            Legacy training is{" "}
+            Most compliance training is{" "}
             <motion.span
               initial={{ opacity: 0 }}
               animate={isInView ? { opacity: 1 } : {}}
@@ -62,6 +62,14 @@ export default function Problem() {
             </motion.span>
             .
           </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] as const }}
+            className="text-subhead mt-6"
+          >
+            When training feels like a chore, completion drops and teams stay exposed.
+          </motion.p>
         </div>
 
         {/* Horizontal line */}
@@ -114,6 +122,21 @@ export default function Problem() {
             </motion.article>
           ))}
         </div>
+
+        {/* Callout */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, delay: 0.9, ease: [0.16, 1, 0.3, 1] as const }}
+          className="mt-12 flex flex-col md:flex-row md:items-center justify-between gap-6 border border-white/10 bg-black/40 px-6 py-6"
+        >
+          <p className="text-sm text-[var(--foreground-muted)] max-w-2xl">
+            Continuum replaces long, dull modules with short, scenario-based stories people actually finish.
+          </p>
+          <a href="#solution" className="btn btn-ghost">
+            See the solution
+          </a>
+        </motion.div>
       </div>
     </section>
   );

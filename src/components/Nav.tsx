@@ -58,7 +58,7 @@ export default function Nav() {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.7 + index * 0.1 }}
-                className="text-sm text-[var(--foreground-muted)] hover:text-white transition-colors duration-300"
+                className="text-sm text-[var(--foreground-muted)] hover:text-[var(--color-accent)] transition-colors duration-300"
               >
                 {link.label}
               </motion.a>
@@ -128,7 +128,7 @@ export default function Nav() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
-                    className="block py-3 text-lg text-[var(--foreground-muted)] hover:text-white transition-colors duration-300"
+                    className="block py-3 text-lg text-[var(--foreground-muted)] hover:text-[var(--color-accent)] transition-colors duration-300"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     {link.label}

@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { pricingPlans, brand, trackEvent } from "@/lib/data";
+import { pricingPlans, pricingIncludes, brand, trackEvent } from "@/lib/data";
 
 export default function Pricing() {
   const ref = useRef(null);
@@ -15,7 +15,7 @@ export default function Pricing() {
   return (
     <section
       id="pricing"
-      className="py-32 md:py-48 bg-elevated"
+      className="py-32 md:py-48 bg-elevated section-ambient"
       aria-labelledby="pricing-heading"
       ref={ref}
     >
@@ -37,7 +37,7 @@ export default function Pricing() {
             transition={{ duration: 1, delay: 0.1, ease: [0.16, 1, 0.3, 1] as const }}
             className="text-headline mb-6"
           >
-            Transparent pricing
+            Pricing that scales with you
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 30 }}
@@ -45,7 +45,7 @@ export default function Pricing() {
             transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] as const }}
             className="text-subhead"
           >
-            Choose the option that fits your needs. All plans include the full Continuum asset pack.
+            Start with a pilot or scale into a full pathway. Every plan includes the full asset pack.
           </motion.p>
         </div>
 
@@ -127,6 +127,24 @@ export default function Pricing() {
             </motion.div>
           ))}
         </div>
+
+        {/* Includes */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, delay: 0.7, ease: [0.16, 1, 0.3, 1] as const }}
+          className="mt-16 border border-white/10 bg-black/40 px-8 py-8"
+        >
+          <span className="text-label block mb-6">Every plan includes</span>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {pricingIncludes.map((item) => (
+              <div key={item} className="flex items-start gap-3 text-sm">
+                <span className="w-1 h-1 bg-white/50 mt-2 flex-shrink-0" />
+                <span className="text-[var(--foreground-muted)]">{item}</span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
 
         {/* Additional Info */}
         <motion.div

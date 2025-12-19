@@ -7,19 +7,20 @@ export const brand = {
   name: "Continuum",
   tagline: "Training people actually finish.",
   mission:
-    "We deliver premium training assets at production speed—so teams stay compliant without wasting time.",
+    "We deliver premium training assets at production speed so teams stay compliant without wasting time.",
+  heroEyebrow: "Compliance Training Studio",
   heroSubhead:
-    "Premium training videos, decks, and PDFs—delivered at production speed.",
-  primaryCta: "Book a call",
-  secondaryCta: "Watch the launch film",
+    "Cinematic, scenario-based modules delivered in days. Script, video, deck, PDF, and captions in one LMS-ready pack.",
+  primaryCta: "Book a 15-min call",
+  secondaryCta: "See sample modules",
   // Placeholder: Replace with actual Calendly or booking link
   bookingUrl: "#book-a-call",
 };
 
 export const proofChips = [
   { label: "48-hour first cut", icon: "clock" },
-  { label: "Final in ~3 business days", icon: "check" },
-  { label: "Two revision rounds", icon: "refresh" },
+  { label: "LMS-ready asset pack", icon: "check" },
+  { label: "2 revision rounds", icon: "refresh" },
 ];
 
 export const navLinks = [
@@ -27,6 +28,7 @@ export const navLinks = [
   { label: "Work", href: "#work" },
   { label: "Process", href: "#process" },
   { label: "Pricing", href: "#pricing" },
+  { label: "Pilot Kit", href: "#book-a-call" },
   { label: "FAQ", href: "#faq" },
 ];
 
@@ -34,14 +36,14 @@ export const problemCards = [
   {
     id: "too-long",
     title: "Too long",
-    description: "Completion drops off a cliff after 3 minutes.",
+    description: "Completion drops after 3 minutes when modules run long.",
     stat: "70%",
     statLabel: "drop-off rate",
   },
   {
     id: "too-dull",
     title: "Too dull",
-    description: "Slides and stock footage put people to sleep.",
+    description: "Slides and stock footage lose attention fast.",
     stat: "12%",
     statLabel: "retention after 24hrs",
   },
@@ -52,6 +54,39 @@ export const problemCards = [
     stat: "4-6",
     statLabel: "months average",
   },
+];
+
+export const audienceSegments = [
+  "L&D teams",
+  "People Ops",
+  "Compliance",
+  "IT Security",
+  "Operations",
+];
+
+export const differentiators = [
+  {
+    title: "Story-first scripts",
+    description:
+      "We shape scripts around real scenarios so people recognize the moment and act on it.",
+  },
+  {
+    title: "Production-grade visuals",
+    description:
+      "Cinematic editing, tight pacing, and purposeful sound design keep attention locked in.",
+  },
+  {
+    title: "LMS-ready packaging",
+    description:
+      "Video, deck, PDF, and captions delivered together so launch is painless.",
+  },
+];
+
+export const outcomeStats = [
+  { value: "90-180 sec", label: "Module length" },
+  { value: "48h", label: "First cut" },
+  { value: "~3 days", label: "Typical delivery" },
+  { value: "2 rounds", label: "Revisions included" },
 ];
 
 export const deliverables = [
@@ -67,26 +102,26 @@ export const styleOptions = [
   {
     id: "cinematic",
     label: "Cinematic",
-    gradient: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
-    accent: "#00d4ff",
+    gradient: "linear-gradient(135deg, #0b0f14 0%, #122032 50%, #0a0f1a 100%)",
+    accent: "#59d6ff",
   },
   {
     id: "hyperreal",
     label: "Hyperreal",
-    gradient: "linear-gradient(135deg, #2d1b4e 0%, #1a1a2e 50%, #0d0d1a 100%)",
-    accent: "#ff6b6b",
+    gradient: "linear-gradient(135deg, #1a0f0a 0%, #2b1d12 50%, #120a08 100%)",
+    accent: "#ff7a5c",
   },
   {
     id: "anime",
     label: "Anime",
-    gradient: "linear-gradient(135deg, #1a2a4a 0%, #0a1628 50%, #0d1f3c 100%)",
-    accent: "#ffd93d",
+    gradient: "linear-gradient(135deg, #0b1a14 0%, #10251b 50%, #0a120f 100%)",
+    accent: "#b6ff7a",
   },
   {
     id: "motion-graphics",
     label: "Motion Graphics",
-    gradient: "linear-gradient(135deg, #0d2818 0%, #1a3a2a 50%, #0d1f18 100%)",
-    accent: "#6bcb77",
+    gradient: "linear-gradient(135deg, #11161f 0%, #182233 50%, #0b111a 100%)",
+    accent: "#ffd166",
   },
 ];
 
@@ -187,7 +222,7 @@ export const processSteps = [
   {
     id: 1,
     title: "Brief",
-    duration: "15–30 min",
+    duration: "15-30 min",
     description: "We capture your objectives, audience, and tone in a focused kickoff call.",
     deliverables: ["Objectives document", "Audience profile", "Tone guidelines"],
   },
@@ -227,8 +262,7 @@ export const pricingPlans = [
       "All export formats",
     ],
     cta: "Book a call",
-    // REPLACE: Add actual price
-    price: "From £X",
+    price: "Pilot pricing",
     popular: false,
   },
   {
@@ -244,8 +278,7 @@ export const pricingPlans = [
       "Priority scheduling",
     ],
     cta: "Book a call",
-    // REPLACE: Add actual price
-    price: "From £X",
+    price: "Volume pricing",
     popular: true,
   },
   {
@@ -261,33 +294,52 @@ export const pricingPlans = [
       "Quarterly planning calls",
     ],
     cta: "Book a call",
-    // REPLACE: Add actual price
-    price: "From £X/mo",
+    price: "Monthly pricing",
     popular: false,
   },
 ];
 
+export const pricingIncludes = [
+  "Script and storyboard",
+  "Brand-matched visual style",
+  "Captions and transcripts",
+  "LMS-ready exports",
+  "Two revision rounds",
+];
+
 export const leadMagnet = {
-  title: "Free: UK Digital Training Modernisation Kit",
+  title: "Pilot kit + 15-min fit check",
   bullets: [
-    "Topic map of core compliance modules",
+    "Core compliance topic map",
     "Microlearning storyboard template",
     "Pilot brief checklist",
+    "Module length and pacing guide",
+    "Example production timeline",
   ],
   successMessage:
-    "Thanks! Check your inbox for your modernisation kit.",
+    "Thanks! Check your inbox for your pilot kit and next steps.",
 };
 
 export const faqs = [
   {
+    question: "What does a pilot include?",
+    answer:
+      "One focused module (up to 3 minutes) with the full asset pack: video, deck, PDF, captions, and stills. Script and storyboard included.",
+  },
+  {
     question: "Do you provide an LMS?",
     answer:
-      "No—we produce training assets (videos, PDFs, decks, images) that are compatible with any LMS. You deploy them through your existing platform or internal comms channels.",
+      "No. We produce training assets (videos, PDFs, decks, images) that are compatible with any LMS. You deploy them through your existing platform or internal channels.",
   },
   {
     question: "How fast can you deliver?",
     answer:
       "First cut in 48 hours. Typical final delivery in approximately 3 business days, depending on feedback turnaround and complexity.",
+  },
+  {
+    question: "Can you work with our existing materials?",
+    answer:
+      "Yes. We can adapt your decks, policies, and SME notes or build a new script from scratch.",
   },
   {
     question: "How many revisions are included?",
