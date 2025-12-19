@@ -40,10 +40,10 @@ export default function Nav() {
             aria-label={`${brand.name} - Home`}
           >
             <Image
-              src="/images/logo-128.png"
+              src="/images/logo-512.png"
               alt={brand.name}
-              width={120}
-              height={32}
+              width={512}
+              height={512}
               priority
               className="h-8 w-auto"
             />
