@@ -3,26 +3,20 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 
-// Brighter character set for more visibility
-const CHARS = " ·:;+*#%@";
-const BRIGHT_CHARS = "░▒▓█";
-
 export default function AsciiVideo() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [dimensions, setDimensions] = useState({ cols: 200, rows: 60 });
+  const [dimensions, setDimensions] = useState({ cols: 150, rows: 50 });
   const [asciiFrame, setAsciiFrame] = useState<string>("");
   const animationRef = useRef<number>(0);
   const timeRef = useRef<number>(0);
-  const mouseRef = useRef({ x: 0.5, y: 0.5 });
 
   // Update dimensions based on screen size
   useEffect(() => {
     const updateDimensions = () => {
-      const charWidth = 8;
-      const charHeight = 14;
+      const charWidth = 9;
+      const charHeight = 16;
       const cols = Math.floor(window.innerWidth / charWidth);
       const rows = Math.floor(window.innerHeight / charHeight);
-      setDimensions({ cols: Math.min(cols, 250), rows: Math.min(rows, 80) });
+      setDimensions({ cols: Math.min(cols, 180), rows: Math.min(rows, 70) });
     };
 
     updateDimensions();
@@ -30,84 +24,159 @@ export default function AsciiVideo() {
     return () => window.removeEventListener("resize", updateDimensions);
   }, []);
 
-  // Track mouse for interactivity
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseRef.current = {
-        x: e.clientX / window.innerWidth,
-        y: e.clientY / window.innerHeight,
-      };
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
-
-  // Generate frame
+  // Generate frame with video production themed elements
   const generateFrame = useCallback(
     (time: number): string => {
       const { cols, rows } = dimensions;
       const lines: string[] = [];
-      const mx = mouseRef.current.x;
-      const my = mouseRef.current.y;
+
+      // Film strip characters
+      const FILM_HOLE = "◘";
+      const FILM_EDGE = "│";
+
+      // Waveform characters (different heights)
+      const WAVE_CHARS = ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"];
+
+      // Progress/timeline characters
+      const PROGRESS_EMPTY = "─";
+      const PROGRESS_FILL = "━";
+      const PROGRESS_HEAD = "●";
 
       for (let y = 0; y < rows; y++) {
         let line = "";
+        const ny = y / rows; // Normalized y (0-1)
+
         for (let x = 0; x < cols; x++) {
-          // Normalize to -1 to 1
-          const nx = (x / cols - 0.5) * 2;
-          const ny = (y / rows - 0.5) * 2;
+          const nx = x / cols; // Normalized x (0-1)
+          let char = " ";
 
-          // Distance from center
-          const dist = Math.sqrt(nx * nx + ny * ny);
-
-          // Distance from mouse
-          const dmx = nx - (mx - 0.5) * 2;
-          const dmy = ny - (my - 0.5) * 2;
-          const mouseDist = Math.sqrt(dmx * dmx + dmy * dmy);
-
-          // === WAVE PATTERNS ===
-
-          // Large slow-moving waves
-          const bigWave = Math.sin(dist * 3 - time * 0.8) * 0.4;
-
-          // Faster ripples from center
-          const ripple = Math.sin(dist * 12 - time * 3) * Math.exp(-dist * 0.8) * 0.5;
-
-          // Horizontal flow (like video timeline/data)
-          const flow = Math.sin(nx * 4 + time * 2) * Math.sin(ny * 2 + time * 0.5) * 0.2;
-
-          // Diagonal sweep
-          const sweep = Math.sin((nx + ny) * 5 - time * 1.5) * 0.15;
-
-          // Mouse interaction - ripple from cursor
-          const mouseEffect = Math.sin(mouseDist * 15 - time * 4) * Math.exp(-mouseDist * 2) * 0.4;
-
-          // Vertical data columns (matrix-style)
-          const column = Math.sin(x * 0.3 + time * 2 + y * 0.1) * 0.1;
-
-          // Breathing/pulsing center
-          const pulse = Math.exp(-dist * 1.5) * Math.sin(time * 1.5) * 0.3;
-
-          // Edge glow
-          const edgeGlow = Math.exp(-Math.abs(dist - 0.8) * 8) * Math.sin(time * 2 + dist * 10) * 0.2;
-
-          // Combine all effects
-          let value = 0.3 + bigWave + ripple + flow + sweep + mouseEffect + column + pulse + edgeGlow;
-
-          // Add subtle noise
-          value += (Math.random() - 0.5) * 0.08;
-
-          // Clamp
-          value = Math.max(0, Math.min(1, value));
-
-          // Map to character - use brighter set for high values
-          if (value > 0.85) {
-            const idx = Math.floor((value - 0.85) / 0.15 * (BRIGHT_CHARS.length - 1));
-            line += BRIGHT_CHARS[Math.min(idx, BRIGHT_CHARS.length - 1)];
-          } else {
-            const idx = Math.floor(value / 0.85 * (CHARS.length - 1));
-            line += CHARS[Math.min(idx, CHARS.length - 1)];
+          // === LEFT FILM STRIP ===
+          if (x < 4) {
+            if (x === 0 || x === 3) {
+              char = FILM_EDGE;
+            } else if (y % 4 === 0) {
+              char = FILM_HOLE;
+            } else {
+              char = " ";
+            }
           }
+          // === RIGHT FILM STRIP ===
+          else if (x >= cols - 4) {
+            const rx = cols - 1 - x;
+            if (rx === 0 || rx === 3) {
+              char = FILM_EDGE;
+            } else if (y % 4 === 0) {
+              char = FILM_HOLE;
+            } else {
+              char = " ";
+            }
+          }
+          // === TOP TIMELINE ===
+          else if (y < 3) {
+            if (y === 1) {
+              // Animated playhead position
+              const playheadPos = ((time * 0.1) % 1) * (cols - 10) + 5;
+              const distFromPlayhead = Math.abs(x - playheadPos);
+
+              if (distFromPlayhead < 1) {
+                char = PROGRESS_HEAD;
+              } else if (x % 10 === 0) {
+                char = "┼";
+              } else {
+                char = x < playheadPos ? PROGRESS_FILL : PROGRESS_EMPTY;
+              }
+            } else if (y === 0 && x % 20 === 0) {
+              // Timecode markers
+              const seconds = Math.floor((x / cols) * 120);
+              const timecode = `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, "0")}`;
+              const chars = timecode.split("");
+              if (x + chars.length < cols - 4) {
+                line += chars.join("");
+                x += chars.length - 1;
+                continue;
+              }
+            }
+          }
+          // === BOTTOM WAVEFORM (Audio) ===
+          else if (y >= rows - 8) {
+            const waveY = rows - y - 1; // Invert so 0 is at bottom
+            const waveHeight = 7;
+
+            // Create audio waveform pattern
+            const wave1 = Math.sin(x * 0.15 + time * 2) * 0.5;
+            const wave2 = Math.sin(x * 0.08 - time * 1.5) * 0.3;
+            const wave3 = Math.sin(x * 0.3 + time * 3) * 0.2;
+            const combinedWave = (wave1 + wave2 + wave3 + 1) / 2; // Normalize to 0-1
+
+            const waveLevel = Math.floor(combinedWave * waveHeight);
+
+            if (waveY <= waveLevel) {
+              // Use different intensity based on how close to peak
+              const intensity = Math.min(7, Math.floor((waveLevel - waveY + 1) / waveHeight * 7));
+              char = WAVE_CHARS[intensity];
+            } else {
+              char = " ";
+            }
+          }
+          // === CENTER CONTENT AREA ===
+          else {
+            // Video frame area with subtle patterns
+            const centerX = cols / 2;
+            const centerY = rows / 2;
+            const distX = Math.abs(x - centerX) / (cols / 2);
+            const distY = Math.abs(y - centerY) / (rows / 2);
+            const dist = Math.sqrt(distX * distX + distY * distY);
+
+            // Play button triangle in center
+            const playBtnSize = Math.min(cols, rows) * 0.15;
+            const relX = x - centerX;
+            const relY = (y - centerY) * 1.8; // Aspect ratio correction
+
+            // Triangle check: point on right, base on left
+            const inTriangle =
+              relX > -playBtnSize * 0.5 &&
+              relX < playBtnSize * 0.8 &&
+              Math.abs(relY) < (playBtnSize * 0.5 - relX * 0.4);
+
+            if (inTriangle) {
+              // Pulsing play button
+              const pulse = Math.sin(time * 2) * 0.3 + 0.7;
+              if (Math.random() < pulse * 0.3) {
+                char = "▶";
+              } else {
+                char = "░";
+              }
+            }
+            // Circular border around play button
+            else if (Math.abs(dist - 0.25) < 0.03) {
+              const angle = Math.atan2(y - centerY, x - centerX);
+              const progress = ((angle + Math.PI) / (2 * Math.PI) + time * 0.1) % 1;
+              if (progress < 0.75) {
+                char = "○";
+              }
+            }
+            // Subtle scan lines effect
+            else if (y % 3 === 0 && Math.random() < 0.02) {
+              char = "─";
+            }
+            // Video noise/grain in background
+            else if (Math.random() < 0.008) {
+              const noiseChars = ["·", ".", ":", "'"];
+              char = noiseChars[Math.floor(Math.random() * noiseChars.length)];
+            }
+            // Frame markers in corners
+            else if (
+              ((nx < 0.15 || nx > 0.85) && (ny < 0.2 || ny > 0.75)) &&
+              (Math.abs(nx - 0.1) < 0.02 || Math.abs(nx - 0.9) < 0.02 ||
+               Math.abs(ny - 0.15) < 0.02 || Math.abs(ny - 0.8) < 0.02)
+            ) {
+              if ((x + y) % 2 === 0) {
+                char = "┼";
+              }
+            }
+          }
+
+          line += char;
         }
         lines.push(line);
       }
@@ -122,9 +191,9 @@ export default function AsciiVideo() {
     let lastTime = 0;
 
     const animate = (currentTime: number) => {
-      if (currentTime - lastTime > 40) {
-        // ~25fps
-        timeRef.current += 0.04;
+      if (currentTime - lastTime > 50) {
+        // ~20fps
+        timeRef.current += 0.05;
         setAsciiFrame(generateFrame(timeRef.current));
         lastTime = currentTime;
       }
@@ -137,7 +206,6 @@ export default function AsciiVideo() {
 
   return (
     <motion.div
-      ref={containerRef}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1.5 }}
@@ -145,29 +213,21 @@ export default function AsciiVideo() {
     >
       {/* Full screen ASCII */}
       <pre
-        className="absolute inset-0 text-[8px] sm:text-[10px] md:text-[12px] lg:text-[14px] leading-[1.2] font-mono whitespace-pre text-white/30 overflow-hidden"
+        className="absolute inset-0 text-[9px] sm:text-[11px] md:text-[13px] lg:text-[15px] leading-[1.1] font-mono whitespace-pre text-white/25 overflow-hidden"
         style={{
           fontFamily: "ui-monospace, 'SF Mono', Menlo, monospace",
-          textShadow: "0 0 20px rgba(255,255,255,0.15), 0 0 40px rgba(255,255,255,0.05)",
+          textShadow: "0 0 10px rgba(255,255,255,0.1)",
         }}
       >
         {asciiFrame}
       </pre>
 
-      {/* Scanlines */}
-      <div
-        className="absolute inset-0 pointer-events-none opacity-20"
-        style={{
-          background:
-            "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.4) 2px, rgba(0,0,0,0.4) 4px)",
-        }}
-      />
-
       {/* Vignette */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: "radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.6) 100%)",
+          background:
+            "radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.7) 100%)",
         }}
       />
     </motion.div>
