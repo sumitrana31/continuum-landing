@@ -3,6 +3,22 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 
+// ASCII art logo - CONTINUUM in large block letters
+const LOGO_ART = [
+  "  ██████╗ ██████╗ ███╗   ██╗████████╗██╗███╗   ██╗██╗   ██╗██╗   ██╗███╗   ███╗",
+  " ██╔════╝██╔═══██╗████╗  ██║╚══██╔══╝██║████╗  ██║██║   ██║██║   ██║████╗ ████║",
+  " ██║     ██║   ██║██╔██╗ ██║   ██║   ██║██╔██╗ ██║██║   ██║██║   ██║██╔████╔██║",
+  " ██║     ██║   ██║██║╚██╗██║   ██║   ██║██║╚██╗██║██║   ██║██║   ██║██║╚██╔╝██║",
+  " ╚██████╗╚██████╔╝██║ ╚████║   ██║   ██║██║ ╚████║╚██████╔╝╚██████╔╝██║ ╚═╝ ██║",
+  "  ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝  ╚═════╝ ╚═╝     ╚═╝",
+];
+
+const LOGO_WIDTH = LOGO_ART[0].length;
+const LOGO_HEIGHT = LOGO_ART.length;
+
+// Glitch characters
+const GLITCH_CHARS = "░▒▓█▄▀╔╗╚╝║═";
+
 export default function AsciiVideo() {
   const [dimensions, setDimensions] = useState({ cols: 150, rows: 50 });
   const [asciiFrame, setAsciiFrame] = useState<string>("");
@@ -12,11 +28,11 @@ export default function AsciiVideo() {
   // Update dimensions based on screen size
   useEffect(() => {
     const updateDimensions = () => {
-      const charWidth = 9;
-      const charHeight = 16;
+      const charWidth = 8;
+      const charHeight = 14;
       const cols = Math.floor(window.innerWidth / charWidth);
       const rows = Math.floor(window.innerHeight / charHeight);
-      setDimensions({ cols: Math.min(cols, 180), rows: Math.min(rows, 70) });
+      setDimensions({ cols: Math.min(cols, 200), rows: Math.min(rows, 80) });
     };
 
     updateDimensions();
@@ -24,161 +40,123 @@ export default function AsciiVideo() {
     return () => window.removeEventListener("resize", updateDimensions);
   }, []);
 
-  // Generate frame with video production themed elements
+  // Generate frame with animated logo
   const generateFrame = useCallback(
     (time: number): string => {
       const { cols, rows } = dimensions;
       const lines: string[] = [];
 
-      // Film strip characters
-      const FILM_HOLE = "◘";
-      const FILM_EDGE = "│";
+      // Calculate logo position (centered)
+      const logoStartX = Math.floor((cols - LOGO_WIDTH) / 2);
+      const logoStartY = Math.floor((rows - LOGO_HEIGHT) / 2);
 
-      // Waveform characters (different heights)
-      const WAVE_CHARS = ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"];
-
-      // Progress/timeline characters
-      const PROGRESS_EMPTY = "─";
-      const PROGRESS_FILL = "━";
-      const PROGRESS_HEAD = "●";
+      // Wave parameters
+      const waveAmplitude = 2;
+      const waveFrequency = 0.1;
+      const waveSpeed = 2;
 
       for (let y = 0; y < rows; y++) {
         let line = "";
-        const ny = y / rows; // Normalized y (0-1)
 
         for (let x = 0; x < cols; x++) {
-          const nx = x / cols; // Normalized x (0-1)
           let char = " ";
 
-          // === LEFT FILM STRIP ===
-          if (x < 4) {
-            if (x === 0 || x === 3) {
-              char = FILM_EDGE;
-            } else if (y % 4 === 0) {
-              char = FILM_HOLE;
-            } else {
-              char = " ";
-            }
-          }
-          // === RIGHT FILM STRIP ===
-          else if (x >= cols - 4) {
-            const rx = cols - 1 - x;
-            if (rx === 0 || rx === 3) {
-              char = FILM_EDGE;
-            } else if (y % 4 === 0) {
-              char = FILM_HOLE;
-            } else {
-              char = " ";
-            }
-          }
-          // === TOP TIMELINE ===
-          else if (y < 3) {
-            if (y === 1) {
-              // Animated playhead position
-              const playheadPos = ((time * 0.1) % 1) * (cols - 10) + 5;
-              const distFromPlayhead = Math.abs(x - playheadPos);
+          // Check if we're in the logo area
+          const logoX = x - logoStartX;
+          const logoY = y - logoStartY;
 
-              if (distFromPlayhead < 1) {
-                char = PROGRESS_HEAD;
-              } else if (x % 10 === 0) {
-                char = "┼";
+          // Apply wave distortion to Y position
+          const wave = Math.sin(x * waveFrequency + time * waveSpeed) * waveAmplitude;
+          const distortedLogoY = Math.round(logoY - wave);
+
+          // Check if this position is within the logo bounds
+          if (
+            logoX >= 0 &&
+            logoX < LOGO_WIDTH &&
+            distortedLogoY >= 0 &&
+            distortedLogoY < LOGO_HEIGHT
+          ) {
+            const logoChar = LOGO_ART[distortedLogoY]?.[logoX];
+
+            if (logoChar && logoChar !== " ") {
+              // Apply glitch effect randomly
+              const glitchChance = 0.02 + Math.sin(time * 3) * 0.01;
+
+              if (Math.random() < glitchChance) {
+                char = GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)];
               } else {
-                char = x < playheadPos ? PROGRESS_FILL : PROGRESS_EMPTY;
-              }
-            } else if (y === 0 && x % 20 === 0) {
-              // Timecode markers
-              const seconds = Math.floor((x / cols) * 120);
-              const timecode = `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, "0")}`;
-              const chars = timecode.split("");
-              if (x + chars.length < cols - 4) {
-                line += chars.join("");
-                x += chars.length - 1;
-                continue;
+                // Pulsing brightness effect
+                const pulse = Math.sin(time * 2 + x * 0.05) * 0.5 + 0.5;
+                if (pulse > 0.7 && logoChar === "█") {
+                  char = "▓";
+                } else if (pulse < 0.3 && logoChar === "█") {
+                  char = "░";
+                } else {
+                  char = logoChar;
+                }
               }
             }
           }
-          // === BOTTOM WAVEFORM (Audio) ===
-          else if (y >= rows - 8) {
-            const waveY = rows - y - 1; // Invert so 0 is at bottom
-            const waveHeight = 7;
 
-            // Create audio waveform pattern
-            const wave1 = Math.sin(x * 0.15 + time * 2) * 0.5;
-            const wave2 = Math.sin(x * 0.08 - time * 1.5) * 0.3;
-            const wave3 = Math.sin(x * 0.3 + time * 3) * 0.2;
-            const combinedWave = (wave1 + wave2 + wave3 + 1) / 2; // Normalize to 0-1
-
-            const waveLevel = Math.floor(combinedWave * waveHeight);
-
-            if (waveY <= waveLevel) {
-              // Use different intensity based on how close to peak
-              const intensity = Math.min(7, Math.floor((waveLevel - waveY + 1) / waveHeight * 7));
-              char = WAVE_CHARS[intensity];
-            } else {
-              char = " ";
-            }
-          }
-          // === CENTER CONTENT AREA ===
-          else {
-            // Video frame area with subtle patterns
-            const centerX = cols / 2;
-            const centerY = rows / 2;
-            const distX = Math.abs(x - centerX) / (cols / 2);
-            const distY = Math.abs(y - centerY) / (rows / 2);
-            const dist = Math.sqrt(distX * distX + distY * distY);
-
-            // Play button triangle in center
-            const playBtnSize = Math.min(cols, rows) * 0.15;
-            const relX = x - centerX;
-            const relY = (y - centerY) * 1.8; // Aspect ratio correction
-
-            // Triangle check: point on right, base on left
-            const inTriangle =
-              relX > -playBtnSize * 0.5 &&
-              relX < playBtnSize * 0.8 &&
-              Math.abs(relY) < (playBtnSize * 0.5 - relX * 0.4);
-
-            if (inTriangle) {
-              // Pulsing play button
-              const pulse = Math.sin(time * 2) * 0.3 + 0.7;
-              if (Math.random() < pulse * 0.3) {
-                char = "▶";
-              } else {
-                char = "░";
-              }
-            }
-            // Circular border around play button
-            else if (Math.abs(dist - 0.25) < 0.03) {
-              const angle = Math.atan2(y - centerY, x - centerX);
-              const progress = ((angle + Math.PI) / (2 * Math.PI) + time * 0.1) % 1;
-              if (progress < 0.75) {
-                char = "○";
-              }
-            }
-            // Subtle scan lines effect
-            else if (y % 3 === 0 && Math.random() < 0.02) {
-              char = "─";
-            }
-            // Video noise/grain in background
-            else if (Math.random() < 0.008) {
-              const noiseChars = ["·", ".", ":", "'"];
+          // Background particles/noise
+          if (char === " ") {
+            // Subtle background noise
+            if (Math.random() < 0.003) {
+              const noiseChars = ["·", ".", ":", "°"];
               char = noiseChars[Math.floor(Math.random() * noiseChars.length)];
             }
-            // Frame markers in corners
-            else if (
-              ((nx < 0.15 || nx > 0.85) && (ny < 0.2 || ny > 0.75)) &&
-              (Math.abs(nx - 0.1) < 0.02 || Math.abs(nx - 0.9) < 0.02 ||
-               Math.abs(ny - 0.15) < 0.02 || Math.abs(ny - 0.8) < 0.02)
-            ) {
-              if ((x + y) % 2 === 0) {
-                char = "┼";
-              }
+
+            // Vertical scan lines
+            if (x % 8 === 0 && Math.random() < 0.02) {
+              char = "│";
+            }
+
+            // Horizontal data streams (matrix-style)
+            const streamY = (y + Math.floor(time * 10)) % rows;
+            if (streamY < 3 && Math.random() < 0.01) {
+              char = "─";
             }
           }
 
           line += char;
         }
         lines.push(line);
+      }
+
+      // Add decorative elements
+
+      // Top border with animated progress
+      const progressPos = Math.floor((time * 0.15 % 1) * (cols - 10)) + 5;
+      let topLine = lines[2] || "";
+      topLine = topLine.split("").map((c, i) => {
+        if (i < 4 || i >= cols - 4) return c;
+        if (Math.abs(i - progressPos) < 2) return "●";
+        if (i % 15 === 0) return "┼";
+        if (c === " ") return "─";
+        return c;
+      }).join("");
+      lines[2] = topLine;
+
+      // Bottom waveform
+      for (let y = rows - 6; y < rows - 1; y++) {
+        let bottomLine = "";
+        const waveRow = rows - 1 - y;
+
+        for (let x = 0; x < cols; x++) {
+          const wave1 = Math.sin(x * 0.12 + time * 2.5) * 0.5;
+          const wave2 = Math.sin(x * 0.07 - time * 1.8) * 0.3;
+          const wave3 = Math.sin(x * 0.2 + time * 3.5) * 0.2;
+          const waveHeight = (wave1 + wave2 + wave3 + 1) / 2 * 5;
+
+          if (waveRow < waveHeight) {
+            const intensity = Math.floor((waveHeight - waveRow) / 5 * 7);
+            const bars = ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"];
+            bottomLine += bars[Math.min(intensity, 7)];
+          } else {
+            bottomLine += " ";
+          }
+        }
+        lines[y] = bottomLine;
       }
 
       return lines.join("\n");
@@ -192,7 +170,6 @@ export default function AsciiVideo() {
 
     const animate = (currentTime: number) => {
       if (currentTime - lastTime > 50) {
-        // ~20fps
         timeRef.current += 0.05;
         setAsciiFrame(generateFrame(timeRef.current));
         lastTime = currentTime;
@@ -213,21 +190,30 @@ export default function AsciiVideo() {
     >
       {/* Full screen ASCII */}
       <pre
-        className="absolute inset-0 text-[9px] sm:text-[11px] md:text-[13px] lg:text-[15px] leading-[1.1] font-mono whitespace-pre text-white/25 overflow-hidden"
+        className="absolute inset-0 text-[7px] sm:text-[9px] md:text-[11px] lg:text-[13px] leading-[1.15] font-mono whitespace-pre text-white/20 overflow-hidden flex items-center justify-center"
         style={{
           fontFamily: "ui-monospace, 'SF Mono', Menlo, monospace",
-          textShadow: "0 0 10px rgba(255,255,255,0.1)",
+          textShadow: "0 0 20px rgba(255,255,255,0.1)",
         }}
       >
         {asciiFrame}
       </pre>
+
+      {/* Scanlines */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-30"
+        style={{
+          background:
+            "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.3) 2px, rgba(0,0,0,0.3) 4px)",
+        }}
+      />
 
       {/* Vignette */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.7) 100%)",
+            "radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.8) 100%)",
         }}
       />
     </motion.div>
