@@ -3,27 +3,16 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 
-// ASCII art logo - CONTINUUM in large block letters
-const LOGO_ART = [
-  "  ██████╗ ██████╗ ███╗   ██╗████████╗██╗███╗   ██╗██╗   ██╗██╗   ██╗███╗   ███╗",
-  " ██╔════╝██╔═══██╗████╗  ██║╚══██╔══╝██║████╗  ██║██║   ██║██║   ██║████╗ ████║",
-  " ██║     ██║   ██║██╔██╗ ██║   ██║   ██║██╔██╗ ██║██║   ██║██║   ██║██╔████╔██║",
-  " ██║     ██║   ██║██║╚██╗██║   ██║   ██║██║╚██╗██║██║   ██║██║   ██║██║╚██╔╝██║",
-  " ╚██████╗╚██████╔╝██║ ╚████║   ██║   ██║██║ ╚████║╚██████╔╝╚██████╔╝██║ ╚═╝ ██║",
-  "  ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝  ╚═════╝ ╚═╝     ╚═╝",
-];
-
-const LOGO_WIDTH = LOGO_ART[0].length;
-const LOGO_HEIGHT = LOGO_ART.length;
-
-// Glitch characters
-const GLITCH_CHARS = "░▒▓█▄▀╔╗╚╝║═";
+// Brighter character set for more visibility
+const CHARS = " ·:;+*#%@";
+const BRIGHT_CHARS = "░▒▓█";
 
 export default function AsciiVideo() {
-  const [dimensions, setDimensions] = useState({ cols: 150, rows: 50 });
+  const [dimensions, setDimensions] = useState({ cols: 200, rows: 60 });
   const [asciiFrame, setAsciiFrame] = useState<string>("");
   const animationRef = useRef<number>(0);
   const timeRef = useRef<number>(0);
+  const mouseRef = useRef({ x: 0.5, y: 0.5 });
 
   // Update dimensions based on screen size
   useEffect(() => {
@@ -32,7 +21,7 @@ export default function AsciiVideo() {
       const charHeight = 14;
       const cols = Math.floor(window.innerWidth / charWidth);
       const rows = Math.floor(window.innerHeight / charHeight);
-      setDimensions({ cols: Math.min(cols, 200), rows: Math.min(rows, 80) });
+      setDimensions({ cols: Math.min(cols, 250), rows: Math.min(rows, 80) });
     };
 
     updateDimensions();
@@ -40,123 +29,86 @@ export default function AsciiVideo() {
     return () => window.removeEventListener("resize", updateDimensions);
   }, []);
 
-  // Generate frame with animated logo
+  // Track mouse for interactivity
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseRef.current = {
+        x: e.clientX / window.innerWidth,
+        y: e.clientY / window.innerHeight,
+      };
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
+  // Generate frame
   const generateFrame = useCallback(
     (time: number): string => {
       const { cols, rows } = dimensions;
       const lines: string[] = [];
-
-      // Calculate logo position (centered)
-      const logoStartX = Math.floor((cols - LOGO_WIDTH) / 2);
-      const logoStartY = Math.floor((rows - LOGO_HEIGHT) / 2);
-
-      // Wave parameters
-      const waveAmplitude = 2;
-      const waveFrequency = 0.1;
-      const waveSpeed = 2;
+      const mx = mouseRef.current.x;
+      const my = mouseRef.current.y;
 
       for (let y = 0; y < rows; y++) {
         let line = "";
-
         for (let x = 0; x < cols; x++) {
-          let char = " ";
+          // Normalize to -1 to 1
+          const nx = (x / cols - 0.5) * 2;
+          const ny = (y / rows - 0.5) * 2;
 
-          // Check if we're in the logo area
-          const logoX = x - logoStartX;
-          const logoY = y - logoStartY;
+          // Distance from center
+          const dist = Math.sqrt(nx * nx + ny * ny);
 
-          // Apply wave distortion to Y position
-          const wave = Math.sin(x * waveFrequency + time * waveSpeed) * waveAmplitude;
-          const distortedLogoY = Math.round(logoY - wave);
+          // Distance from mouse
+          const dmx = nx - (mx - 0.5) * 2;
+          const dmy = ny - (my - 0.5) * 2;
+          const mouseDist = Math.sqrt(dmx * dmx + dmy * dmy);
 
-          // Check if this position is within the logo bounds
-          if (
-            logoX >= 0 &&
-            logoX < LOGO_WIDTH &&
-            distortedLogoY >= 0 &&
-            distortedLogoY < LOGO_HEIGHT
-          ) {
-            const logoChar = LOGO_ART[distortedLogoY]?.[logoX];
+          // === WAVE PATTERNS ===
 
-            if (logoChar && logoChar !== " ") {
-              // Apply glitch effect randomly
-              const glitchChance = 0.02 + Math.sin(time * 3) * 0.01;
+          // Large slow-moving waves
+          const bigWave = Math.sin(dist * 3 - time * 0.8) * 0.4;
 
-              if (Math.random() < glitchChance) {
-                char = GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)];
-              } else {
-                // Pulsing brightness effect
-                const pulse = Math.sin(time * 2 + x * 0.05) * 0.5 + 0.5;
-                if (pulse > 0.7 && logoChar === "█") {
-                  char = "▓";
-                } else if (pulse < 0.3 && logoChar === "█") {
-                  char = "░";
-                } else {
-                  char = logoChar;
-                }
-              }
-            }
+          // Faster ripples from center
+          const ripple = Math.sin(dist * 12 - time * 3) * Math.exp(-dist * 0.8) * 0.5;
+
+          // Horizontal flow (like video timeline/data)
+          const flow = Math.sin(nx * 4 + time * 2) * Math.sin(ny * 2 + time * 0.5) * 0.2;
+
+          // Diagonal sweep
+          const sweep = Math.sin((nx + ny) * 5 - time * 1.5) * 0.15;
+
+          // Mouse interaction - ripple from cursor
+          const mouseEffect = Math.sin(mouseDist * 15 - time * 4) * Math.exp(-mouseDist * 2) * 0.4;
+
+          // Vertical data columns (matrix-style)
+          const column = Math.sin(x * 0.3 + time * 2 + y * 0.1) * 0.1;
+
+          // Breathing/pulsing center
+          const pulse = Math.exp(-dist * 1.5) * Math.sin(time * 1.5) * 0.3;
+
+          // Edge glow
+          const edgeGlow = Math.exp(-Math.abs(dist - 0.8) * 8) * Math.sin(time * 2 + dist * 10) * 0.2;
+
+          // Combine all effects
+          let value = 0.3 + bigWave + ripple + flow + sweep + mouseEffect + column + pulse + edgeGlow;
+
+          // Add subtle noise
+          value += (Math.random() - 0.5) * 0.08;
+
+          // Clamp
+          value = Math.max(0, Math.min(1, value));
+
+          // Map to character - use brighter set for high values
+          if (value > 0.85) {
+            const idx = Math.floor((value - 0.85) / 0.15 * (BRIGHT_CHARS.length - 1));
+            line += BRIGHT_CHARS[Math.min(idx, BRIGHT_CHARS.length - 1)];
+          } else {
+            const idx = Math.floor(value / 0.85 * (CHARS.length - 1));
+            line += CHARS[Math.min(idx, CHARS.length - 1)];
           }
-
-          // Background particles/noise
-          if (char === " ") {
-            // Subtle background noise
-            if (Math.random() < 0.003) {
-              const noiseChars = ["·", ".", ":", "°"];
-              char = noiseChars[Math.floor(Math.random() * noiseChars.length)];
-            }
-
-            // Vertical scan lines
-            if (x % 8 === 0 && Math.random() < 0.02) {
-              char = "│";
-            }
-
-            // Horizontal data streams (matrix-style)
-            const streamY = (y + Math.floor(time * 10)) % rows;
-            if (streamY < 3 && Math.random() < 0.01) {
-              char = "─";
-            }
-          }
-
-          line += char;
         }
         lines.push(line);
-      }
-
-      // Add decorative elements
-
-      // Top border with animated progress
-      const progressPos = Math.floor((time * 0.15 % 1) * (cols - 10)) + 5;
-      let topLine = lines[2] || "";
-      topLine = topLine.split("").map((c, i) => {
-        if (i < 4 || i >= cols - 4) return c;
-        if (Math.abs(i - progressPos) < 2) return "●";
-        if (i % 15 === 0) return "┼";
-        if (c === " ") return "─";
-        return c;
-      }).join("");
-      lines[2] = topLine;
-
-      // Bottom waveform
-      for (let y = rows - 6; y < rows - 1; y++) {
-        let bottomLine = "";
-        const waveRow = rows - 1 - y;
-
-        for (let x = 0; x < cols; x++) {
-          const wave1 = Math.sin(x * 0.12 + time * 2.5) * 0.5;
-          const wave2 = Math.sin(x * 0.07 - time * 1.8) * 0.3;
-          const wave3 = Math.sin(x * 0.2 + time * 3.5) * 0.2;
-          const waveHeight = (wave1 + wave2 + wave3 + 1) / 2 * 5;
-
-          if (waveRow < waveHeight) {
-            const intensity = Math.floor((waveHeight - waveRow) / 5 * 7);
-            const bars = ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"];
-            bottomLine += bars[Math.min(intensity, 7)];
-          } else {
-            bottomLine += " ";
-          }
-        }
-        lines[y] = bottomLine;
       }
 
       return lines.join("\n");
@@ -169,8 +121,9 @@ export default function AsciiVideo() {
     let lastTime = 0;
 
     const animate = (currentTime: number) => {
-      if (currentTime - lastTime > 50) {
-        timeRef.current += 0.05;
+      if (currentTime - lastTime > 40) {
+        // ~25fps
+        timeRef.current += 0.04;
         setAsciiFrame(generateFrame(timeRef.current));
         lastTime = currentTime;
       }
@@ -190,10 +143,10 @@ export default function AsciiVideo() {
     >
       {/* Full screen ASCII */}
       <pre
-        className="absolute inset-0 text-[7px] sm:text-[9px] md:text-[11px] lg:text-[13px] leading-[1.15] font-mono whitespace-pre text-white/20 overflow-hidden flex items-center justify-center"
+        className="absolute inset-0 text-[8px] sm:text-[10px] md:text-[12px] lg:text-[14px] leading-[1.2] font-mono whitespace-pre text-white/30 overflow-hidden"
         style={{
           fontFamily: "ui-monospace, 'SF Mono', Menlo, monospace",
-          textShadow: "0 0 20px rgba(255,255,255,0.1)",
+          textShadow: "0 0 20px rgba(255,255,255,0.15), 0 0 40px rgba(255,255,255,0.05)",
         }}
       >
         {asciiFrame}
@@ -201,10 +154,10 @@ export default function AsciiVideo() {
 
       {/* Scanlines */}
       <div
-        className="absolute inset-0 pointer-events-none opacity-30"
+        className="absolute inset-0 pointer-events-none opacity-20"
         style={{
           background:
-            "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.3) 2px, rgba(0,0,0,0.3) 4px)",
+            "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.4) 2px, rgba(0,0,0,0.4) 4px)",
         }}
       />
 
@@ -212,8 +165,7 @@ export default function AsciiVideo() {
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background:
-            "radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.8) 100%)",
+          background: "radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.6) 100%)",
         }}
       />
     </motion.div>

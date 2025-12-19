@@ -13,8 +13,12 @@ export default function Footer() {
     trackEvent("footer_cta_click", { location: "footer" });
   };
 
+  const handleSecondaryClick = () => {
+    trackEvent("footer_cta_click", { location: "footer", cta: "secondary" });
+  };
+
   return (
-    <footer className="py-32 md:py-48" role="contentinfo" ref={ref}>
+    <footer className="py-32 md:py-48 section-ambient" role="contentinfo" ref={ref}>
       <div className="container">
         {/* Final CTA Section */}
         <div className="max-w-3xl mx-auto text-center mb-24">
@@ -32,20 +36,34 @@ export default function Footer() {
             transition={{ duration: 1, delay: 0.1, ease: [0.16, 1, 0.3, 1] as const }}
             className="text-subhead mb-12"
           >
-            Ready to create training that actually gets watched and remembered?
+            Ready to create training that gets watched and remembered?
           </motion.p>
-          <motion.a
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] as const }}
-            href={brand.bookingUrl}
-            className="btn btn-primary px-12 py-4"
-            onClick={handleCtaClick}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            {brand.primaryCta}
-          </motion.a>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <motion.a
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] as const }}
+              href={brand.bookingUrl}
+              className="btn btn-primary px-12 py-4"
+              onClick={handleCtaClick}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              {brand.primaryCta}
+            </motion.a>
+            <motion.a
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.8, delay: 0.25, ease: [0.16, 1, 0.3, 1] as const }}
+              href="#videos"
+              className="btn btn-secondary px-10 py-4"
+              onClick={handleSecondaryClick}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              {brand.secondaryCta}
+            </motion.a>
+          </div>
         </div>
 
         {/* Divider */}

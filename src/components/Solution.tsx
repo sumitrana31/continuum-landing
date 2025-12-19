@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { deliverables } from "@/lib/data";
+import { deliverables, differentiators } from "@/lib/data";
 
 const DeliverableIcon = ({ type }: { type: string }) => {
   const iconClass = "w-5 h-5";
@@ -57,7 +57,7 @@ export default function Solution() {
   return (
     <section
       id="solution"
-      className="py-32 md:py-48"
+      className="py-32 md:py-48 section-ambient"
       aria-labelledby="solution-heading"
       ref={ref}
     >
@@ -79,7 +79,7 @@ export default function Solution() {
             transition={{ duration: 1, delay: 0.1, ease: [0.16, 1, 0.3, 1] as const }}
             className="text-headline mb-6"
           >
-            Cinematic microlearning
+            Microlearning with production value
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 30 }}
@@ -87,7 +87,7 @@ export default function Solution() {
             transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] as const }}
             className="text-subhead"
           >
-            Short, scenario-driven modules and supporting assets—videos, decks, PDFs, and imagery—packaged for your LMS.
+            Short, scenario-driven modules and supporting assets that ship together for your LMS.
           </motion.p>
         </div>
 
@@ -120,6 +120,29 @@ export default function Solution() {
               <span className="text-sm text-[var(--foreground-muted)] group-hover:text-white transition-colors duration-500">
                 {item.label}
               </span>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Differentiators */}
+        <div className="mt-16 grid md:grid-cols-3 gap-6">
+          {differentiators.map((item, index) => (
+            <motion.div
+              key={item.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{
+                duration: 0.8,
+                delay: 0.6 + index * 0.1,
+                ease: [0.16, 1, 0.3, 1] as const,
+              }}
+              className="card"
+            >
+              <span className="text-label block mb-3">{`0${index + 1}`}</span>
+              <h3 className="text-lg font-medium mb-3">{item.title}</h3>
+              <p className="text-sm text-[var(--foreground-muted)] leading-relaxed">
+                {item.description}
+              </p>
             </motion.div>
           ))}
         </div>

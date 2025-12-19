@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 import { trackEvent } from "@/lib/data";
 
@@ -9,18 +9,18 @@ const featuredVideos = [
   {
     id: 1,
     title: "Don't Click That!",
-    category: "Cybersecurity",
+    category: "Phishing",
     youtubeId: "_wfhLZSPyCo",
     duration: "2:15",
-    description: "Learn to spot fake links and malicious attachments",
+    description: "Learn to spot fake links, QR traps, and risky attachments",
   },
   {
     id: 2,
     title: "Your Digital Footprint",
-    category: "Privacy",
+    category: "Data Privacy",
     youtubeId: "KvWl_6dtRjQ",
     duration: "2:45",
-    description: "Understand how your online activity affects your future",
+    description: "Understand how everyday habits can create compliance risk",
   },
   {
     id: 3,
@@ -36,7 +36,7 @@ const featuredVideos = [
     category: "AI Safety",
     youtubeId: "W1kCMhKzNQA",
     duration: "2:30",
-    description: "Navigate AI tools safely and responsibly",
+    description: "Use AI tools safely and responsibly at work",
   },
 ];
 
@@ -134,10 +134,23 @@ export default function VideoLibrary() {
     document.body.style.overflow = "";
   }, []);
 
+  useEffect(() => {
+    if (!selectedVideo) return;
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        handleCloseModal();
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [selectedVideo, handleCloseModal]);
+
   return (
     <section
       id="videos"
-      className="py-32 md:py-48"
+      className="py-32 md:py-48 section-ambient"
       aria-labelledby="videos-heading"
       ref={ref}
     >
@@ -159,7 +172,7 @@ export default function VideoLibrary() {
             transition={{ duration: 1, delay: 0.1, ease: [0.16, 1, 0.3, 1] as const }}
             className="text-headline mb-6"
           >
-            Training that holds attention
+            Training that keeps attention
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 30 }}
@@ -167,8 +180,8 @@ export default function VideoLibrary() {
             transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] as const }}
             className="text-subhead"
           >
-            A selection from our compliance video library. Each module is
-            designed to be watched, not skipped.
+            A selection from our compliance library. Each module is designed to be
+            watched, not skipped.
           </motion.p>
         </div>
 
@@ -262,7 +275,7 @@ export default function VideoLibrary() {
           transition={{ duration: 1, delay: 0.8 }}
           className="text-center text-sm text-[var(--foreground-muted)] mt-16"
         >
-          50+ modules available across 7 topic areas
+          50+ modules available across cybersecurity, privacy, AI safety, and more
         </motion.p>
       </div>
 

@@ -7,20 +7,21 @@
 
 :root {
   /* Monochrome Palette */
-  --color-black: #000000;
-  --color-near-black: #0a0a0a;
-  --color-charcoal: #111111;
-  --color-dark-gray: #1a1a1a;
-  --color-mid-gray: #2a2a2a;
-  --color-gray: #888888;
-  --color-light-gray: #cccccc;
-  --color-off-white: #f0f0f0;
+  --color-black: #050505;
+  --color-near-black: #0a0b0d;
+  --color-charcoal: #121416;
+  --color-dark-gray: #1b1f24;
+  --color-mid-gray: #2a2f36;
+  --color-gray: #9a9a9a;
+  --color-light-gray: #d0d0d0;
+  --color-off-white: #f4f4f4;
   --color-white: #ffffff;
 
-  /* Accent is now white for contrast on dark */
-  --color-accent: #ffffff;
-  --color-accent-dim: rgba(255, 255, 255, 0.08);
-  --color-accent-subtle: rgba(255, 255, 255, 0.15);
+  /* Accent Palette */
+  --color-accent: #ffb86b;
+  --color-accent-cool: #5ee9ff;
+  --color-accent-dim: rgba(255, 184, 107, 0.12);
+  --color-accent-subtle: rgba(94, 233, 255, 0.14);
 
   /* Semantic Colors */
   --background: var(--color-black);
@@ -110,7 +111,10 @@ html {
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
+  background-image:
+    radial-gradient(1200px 800px at 5% -10%, rgba(94, 233, 255, 0.08), transparent 60%),
+    radial-gradient(1000px 700px at 90% 0%, rgba(255, 184, 107, 0.08), transparent 55%);
   color: var(--foreground);
   font-family: var(--font-sans);
   font-size: var(--font-size-base);
@@ -232,11 +236,13 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--color-white);
   color: var(--color-black);
   border-color: var(--color-white);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.6), 0 18px 35px rgba(255, 184, 107, 0.18);
 }
 
 .btn-primary:hover {
   background: transparent;
   color: var(--color-white);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.8), 0 18px 45px rgba(255, 184, 107, 0.25);
 }
 
 .btn-secondary {
@@ -245,7 +251,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-secondary:hover {
-  border-color: var(--color-white);
+  border-color: var(--color-accent);
 }
 
 .btn-ghost {
@@ -254,7 +260,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-ghost:hover {
-  color: var(--color-white);
+  color: var(--color-accent);
 }
 
 /* ===================================
@@ -271,11 +277,13 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.02);
   color: var(--foreground-muted);
 }
 
 .chip-accent {
-  border-color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 184, 107, 0.4);
+  background: rgba(255, 184, 107, 0.08);
   color: var(--color-white);
 }
 
@@ -284,7 +292,9 @@ h1, h2, h3, h4, h5, h6 {
    =================================== */
 
 .card {
-  background: var(--background-card);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(0, 0, 0, 0.4) 100%),
+    var(--background-card);
   border: 1px solid rgba(255, 255, 255, 0.08);
   padding: var(--space-8);
   transition: all var(--transition-slow);
@@ -292,6 +302,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .card:hover {
   border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
 }
 
 /* ===================================
@@ -301,9 +312,54 @@ h1, h2, h3, h4, h5, h6 {
 .section-divider,
 .section-divider-reverse {
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  background: linear-gradient(90deg, transparent, rgba(94, 233, 255, 0.3), transparent);
   margin: 0 auto;
   max-width: 80%;
+}
+
+.section-divider-reverse {
+  background: linear-gradient(90deg, transparent, rgba(255, 184, 107, 0.3), transparent);
+}
+
+/* ===================================
+   SECTION AMBIENT BACKGROUNDS
+   =================================== */
+
+.section-ambient {
+  position: relative;
+  overflow: hidden;
+}
+
+.section-ambient::before {
+  content: "";
+  position: absolute;
+  inset: -20% 0 auto;
+  height: 70%;
+  background:
+    radial-gradient(60% 60% at 20% 20%, rgba(94, 233, 255, 0.08), transparent 60%),
+    radial-gradient(55% 55% at 80% 10%, rgba(255, 184, 107, 0.1), transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.section-ambient::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 140px 140px;
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 0;
+  mask-image: radial-gradient(circle at 50% 0%, black, transparent 70%);
+  -webkit-mask-image: radial-gradient(circle at 50% 0%, black, transparent 70%);
+}
+
+.section-ambient > .container {
+  position: relative;
+  z-index: 1;
 }
 
 /* ===================================
@@ -322,7 +378,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .form-input:focus {
   outline: none;
-  border-color: var(--color-white);
+  border-color: var(--color-accent);
 }
 
 .form-input::placeholder {
@@ -373,7 +429,7 @@ h1, h2, h3, h4, h5, h6 {
 .scroll-indicator-line {
   width: 1px;
   height: 60px;
-  background: linear-gradient(to bottom, var(--color-white), transparent);
+  background: linear-gradient(to bottom, var(--color-accent), transparent);
   animation: scroll-pulse 2s ease-in-out infinite;
 }
 

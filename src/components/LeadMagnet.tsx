@@ -97,9 +97,9 @@ export default function LeadMagnet() {
 
   return (
     <section
-      id="lead-magnet"
-      className="py-32 md:py-48"
-      aria-labelledby="lead-magnet-heading"
+      id="book-a-call"
+      className="py-32 md:py-48 section-ambient"
+      aria-labelledby="book-call-heading"
       ref={ref}
     >
       <div className="container">
@@ -119,10 +119,10 @@ export default function LeadMagnet() {
                   transition={{ duration: 0.5, delay: 0.2 }}
                   className="text-label block mb-6"
                 >
-                  Free Download
+                  Pilot Kit
                 </motion.span>
                 <motion.h2
-                  id="lead-magnet-heading"
+                  id="book-call-heading"
                   initial={{ opacity: 0, y: 20 }}
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] as const }}
@@ -148,6 +148,9 @@ export default function LeadMagnet() {
                     </motion.li>
                   ))}
                 </ul>
+                <p className="text-xs text-[var(--foreground-muted)] mt-6">
+                  No spam. Use the kit whether or not you hire us.
+                </p>
               </div>
 
               {/* Right Column - Form */}
@@ -266,7 +269,7 @@ export default function LeadMagnet() {
                           id="company"
                           name="company"
                           className={`form-input ${errors.company ? "border-red-500/50" : ""}`}
-                          placeholder="Your company"
+                          placeholder="Company or organisation"
                           value={formData.company}
                           onChange={handleChange("company")}
                           required
@@ -287,14 +290,14 @@ export default function LeadMagnet() {
                         transition={{ duration: 0.5, delay: 0.45 }}
                       >
                         <label htmlFor="topic" className="text-xs text-[var(--foreground-muted)] block mb-2">
-                          What training topic interests you?
+                          What topic should we pilot first?
                         </label>
                         <input
                           type="text"
                           id="topic"
                           name="topic"
                           className="form-input"
-                          placeholder="e.g., Fire safety, GDPR, etc."
+                          placeholder="e.g., GDPR, phishing, harassment"
                           value={formData.topic}
                           onChange={handleChange("topic")}
                         />
@@ -321,9 +324,12 @@ export default function LeadMagnet() {
                             Sending...
                           </span>
                         ) : (
-                          "Get the free kit"
+                          "Request the pilot kit"
                         )}
                       </motion.button>
+                      <p className="text-xs text-[var(--foreground-muted)] text-center">
+                        We will send the kit and follow up with next steps.
+                      </p>
                     </div>
                   </form>
                 )}
