@@ -84,10 +84,10 @@ export default function Footer() {
         >
           {/* Brand */}
           <Image
-            src="/images/logo-512.png"
+            src="/images/logo.svg"
             alt={brand.name}
-            width={512}
-            height={512}
+            width={5504}
+            height={3072}
             className="h-7 w-auto"
           />
 
