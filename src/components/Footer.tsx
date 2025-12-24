@@ -88,7 +88,7 @@ export default function Footer() {
             alt={brand.name}
             width={5504}
             height={3072}
-            className="h-7 w-auto"
+            className="h-9 w-auto"
           />
 
           {/* Disclaimer */}
