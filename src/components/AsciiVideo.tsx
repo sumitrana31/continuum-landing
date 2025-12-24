@@ -14,14 +14,35 @@ export default function AsciiVideo() {
   const timeRef = useRef<number>(0);
   const mouseRef = useRef({ x: 0.5, y: 0.5 });
 
-  // Update dimensions based on screen size
+  // Update dimensions based on screen size with responsive character sizing
   useEffect(() => {
     const updateDimensions = () => {
-      const charWidth = 8;
-      const charHeight = 14;
+      const width = window.innerWidth;
+      // Match the responsive text sizes: text-[8px] sm:text-[10px] md:text-[12px] lg:text-[14px]
+      let charWidth: number;
+      let charHeight: number;
+
+      if (width >= 1024) {
+        // lg: 14px
+        charWidth = 8.4;
+        charHeight = 16.8;
+      } else if (width >= 768) {
+        // md: 12px
+        charWidth = 7.2;
+        charHeight = 14.4;
+      } else if (width >= 640) {
+        // sm: 10px
+        charWidth = 6;
+        charHeight = 12;
+      } else {
+        // mobile: 8px
+        charWidth = 4.8;
+        charHeight = 9.6;
+      }
+
       const cols = Math.floor(window.innerWidth / charWidth);
       const rows = Math.floor(window.innerHeight / charHeight);
-      setDimensions({ cols: Math.min(cols, 250), rows: Math.min(rows, 80) });
+      setDimensions({ cols: Math.min(cols, 300), rows: Math.min(rows, 120) });
     };
 
     updateDimensions();
@@ -110,10 +131,12 @@ export default function AsciiVideo() {
       className="absolute inset-0 overflow-hidden"
     >
       <pre
-        className="absolute inset-0 text-[8px] sm:text-[10px] md:text-[12px] lg:text-[14px] leading-[1.2] font-mono whitespace-pre text-white/30 overflow-hidden"
+        className="absolute inset-0 w-full h-full text-[8px] sm:text-[10px] md:text-[12px] lg:text-[14px] leading-[1.2] font-mono whitespace-pre text-white/30 overflow-hidden"
         style={{
           fontFamily: "ui-monospace, 'SF Mono', Menlo, monospace",
           textShadow: "0 0 20px rgba(255,255,255,0.15), 0 0 40px rgba(255,255,255,0.05)",
+          minWidth: "100vw",
+          minHeight: "100vh",
         }}
       >
         {asciiFrame}
