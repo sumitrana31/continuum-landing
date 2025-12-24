@@ -121,7 +121,7 @@ export default function AsciiVideo() {
         {visibleWords.map((wordPos) => (
           <motion.div
             key={wordPos.id}
-            className="absolute font-mono text-[10px] sm:text-xs md:text-sm tracking-[0.2em] text-white/20 whitespace-nowrap pointer-events-none select-none"
+            className="absolute font-mono text-xs sm:text-sm md:text-base lg:text-lg tracking-[0.2em] text-white/30 whitespace-nowrap pointer-events-none select-none"
             style={{
               left: `${wordPos.x}%`,
               top: `${wordPos.y}%`,
@@ -129,7 +129,7 @@ export default function AsciiVideo() {
             }}
             initial={{ opacity: 0, scale: 0.8, filter: "blur(4px)" }}
             animate={{
-              opacity: [0, 0.4, 0.4, 0],
+              opacity: [0, 0.6, 0.6, 0],
               scale: [0.8, 1, 1, 0.9],
               filter: ["blur(4px)", "blur(0px)", "blur(0px)", "blur(4px)"],
             }}
